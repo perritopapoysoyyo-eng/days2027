@@ -1,0 +1,786 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10101b">
+<title>DAYS 2027</title>
+<style>
+:root{
+  --bg:#10101b;--panel:#1b1b2b;--panel2:#24243a;
+  --text:#f6f4ff;--muted:#aaa8c2;--accent:#a78bfa;
+  --accent2:#7c5ce0;--border:#ffffff18;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,Arial,sans-serif;
+  transition:background .5s,color .5s;
+}
+button,input,select{font:inherit}
+button{
+  border:0;border-radius:13px;padding:13px 17px;
+  background:var(--accent);color:#11101b;font-weight:750;
+  cursor:pointer;
+}
+button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,select{
+  width:100%;padding:13px;border-radius:12px;
+  border:1px solid var(--border);background:var(--panel2);
+  color:var(--text);outline:none;
+}
+input::placeholder{color:var(--muted)}
+select option{background:#202034;color:white}
+small,.muted{color:var(--muted)}
+h1,h2,h3,p{margin-top:0}
+.container{width:min(950px,92%);margin:auto}
+.screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 0}
+.panel{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:23px;padding:23px;
+}
+.hidden{display:none!important}
+.logo{font-size:clamp(36px,8vw,65px);font-weight:950;letter-spacing:-3px}
+.subtitle{color:var(--muted);line-height:1.6}
+.field{display:grid;gap:8px;margin:15px 0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.actions button{flex:1}
+.tag{
+  display:inline-block;background:var(--panel2);padding:7px 11px;
+  border-radius:30px;font-size:12px;color:var(--muted)
+}
+#app{padding:25px 0 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+header .brand{font-size:22px;font-weight:950;letter-spacing:-1px}
+.hero{text-align:center;padding:35px 15px}
+.hero h1{font-size:clamp(35px,8vw,68px);margin-bottom:8px;letter-spacing:-3px}
+.countdown{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin:27px auto;max-width:600px
+}
+.timebox{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:18px;padding:18px 5px
+}
+.timebox strong{display:block;font-size:clamp(30px,7vw,52px);font-variant-numeric:tabular-nums}
+.timebox span{font-size:12px;color:var(--muted)}
+.section{margin-top:22px}
+.section h2{font-size:21px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}
+.card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:18px;padding:18px
+}
+.card h3{margin-bottom:8px}
+.event{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}
+.event:last-child{border:0}
+.event small{display:block;margin-top:4px}
+.fact{font-size:17px;line-height:1.6}
+footer{text-align:center;color:var(--muted);padding:35px 0 10px;font-size:12px}
+#launchScreen{text-align:center}
+#launchScreen .panel{width:min(600px,92%)}
+#locationScreen .panel{width:min(650px,94%)}
+#locationScreen h1{font-size:30px}
+.notice{
+  background:var(--panel2);border:1px solid var(--border);
+  padding:13px;border-radius:13px;font-size:13px;line-height:1.55;
+  color:var(--muted)
+}
+#personalList{margin-top:12px}
+.personal-item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.danger{background:#6d2739;color:white}
+@media(max-width:480px){
+  .panel{padding:18px}
+  .hero{padding:25px 5px}
+  .timebox{padding:14px 3px}
+  .event{align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- SELECTOR INICIAL DE UBICACIÓN -->
+<section id="locationScreen" class="screen">
+ <div class="panel">
+  <div class="tag">DAYS 2027 · WORLD EDITION</div>
+  <h1>🌎 ¿Desde dónde nos visitas?</h1>
+  <p class="subtitle">
+   Antes de entrar, selecciona el lugar desde el que quieres vivir
+   la cuenta regresiva. Así podremos mostrarte las fechas y eventos
+   según tu hora local.
+  </p>
+
+  <div class="notice">
+   <b>🔒 Tu privacidad importa</b><br>
+   Puedes escribir tu ubicación manualmente o permitir que el celular
+   sugiera dónde estás. La ubicación se utiliza para identificar tu
+   país, región y zona horaria. No se guarda tu posición GPS.
+   Si utilizas la detección automática, las coordenadas se envían
+   a OpenStreetMap Nominatim para obtener el nombre aproximado del lugar.
+   No se utiliza para rastrearte.
+  </div>
+
+  <div class="field">
+   <label for="countrySearch">1. Busca tu país</label>
+   <input id="countrySearch" list="countryOptions"
+    placeholder="Ej. México, Chile, Brasil, Argentina...">
+   <datalist id="countryOptions"></datalist>
+  </div>
+
+  <div class="field">
+   <label for="regionSelect">2. Estado, provincia o región</label>
+   <select id="regionSelect">
+    <option value="">Primero selecciona un país</option>
+   </select>
+  </div>
+
+  <div class="field">
+   <label for="cityInput">3. Ciudad o lugar específico</label>
+   <input id="cityInput" placeholder="Ej. Guadalajara, Santiago, São Paulo...">
+  </div>
+
+  <div class="field">
+   <label for="timezoneInput">4. Zona horaria</label>
+   <input id="timezoneInput" list="timezoneOptions"
+    placeholder="Ej. America/Mexico_City">
+   <datalist id="timezoneOptions"></datalist>
+   <small>Comprueba que corresponda a tu ciudad. Es la que controla el contador.</small>
+  </div>
+
+  <div class="actions">
+   <button class="secondary" id="gpsButton">📍 Detectar mi ubicación</button>
+   <button id="saveLocationButton">Entrar a DAYS 2027 →</button>
+  </div>
+  <p id="locationMessage" class="muted" style="margin-top:14px;font-size:13px"></p>
+  <p style="margin-top:15px"><small>Tu selección se guardará en este navegador. Podrás cambiarla después.</small></p>
+ </div>
+</section>
+
+<!-- PANTALLA DE ESPERA -->
+<section id="launchScreen" class="screen hidden">
+ <div class="panel">
+  <div class="tag">DAYS 2027 · PRÓXIMAMENTE</div>
+  <div class="logo">DAYS<br>2027</div>
+  <p class="subtitle">El viaje está por comenzar.</p>
+  <h2>La experiencia inicia en:</h2>
+  <div class="countdown">
+   <div class="timebox"><strong id="launchHours">00</strong><span>HORAS</span></div>
+   <div class="timebox"><strong id="launchMinutes">00</strong><span>MINUTOS</span></div>
+   <div class="timebox"><strong id="launchSeconds">00</strong><span>SEGUNDOS</span></div>
+  </div>
+  <p id="launchDateText" class="muted"></p>
+  <p id="launchPlace" class="tag"></p>
+  <div class="actions">
+   <button class="secondary" id="changeLocationLaunch">Cambiar ubicación</button>
+  </div>
+ </div>
+</section>
+
+<!-- SITIO PRINCIPAL -->
+<main id="app" class="hidden">
+ <div class="container">
+  <header>
+   <div class="brand">🌎 DAYS 2027</div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <span class="tag" id="savedPlace"></span>
+    <button class="secondary" id="changeLocation">Cambiar lugar</button>
+   </div>
+  </header>
+
+  <section class="panel hero">
+   <div class="tag" id="themeLabel">TU CUENTA REGRESIVA</div>
+   <h1 id="mainTitle">2027</h1>
+   <p class="subtitle" id="mainSubtitle">Un nuevo año está por comenzar.</p>
+   <div class="countdown">
+    <div class="timebox"><strong id="hours">00</strong><span>HORAS</span></div>
+    <div class="timebox"><strong id="minutes">00</strong><span>MINUTOS</span></div>
+    <div class="timebox"><strong id="seconds">00</strong><span>SEGUNDOS</span></div>
+   </div>
+   <p class="muted" id="targetText"></p>
+  </section>
+
+  <section class="section cards">
+   <article class="card">
+    <div class="tag">🎂 EVENTO ESPECIAL</div>
+    <h2 style="margin-top:12px">14 de marzo</h2>
+    <h3>Cumpleaños de el creador</h3>
+    <div class="countdown">
+     <div class="timebox"><strong id="bHours">00</strong><span>HORAS</span></div>
+     <div class="timebox"><strong id="bMinutes">00</strong><span>MINUTOS</span></div>
+     <div class="timebox"><strong id="bSeconds">00</strong><span>SEGUNDOS</span></div>
+    </div>
+    <p class="muted" id="birthdayMessage"></p>
+   </article>
+   <article class="card">
+    <div class="tag">📅 SIGUIENTE EVENTO</div>
+    <h2 id="nextEventName" style="margin-top:12px">Cargando...</h2>
+    <p class="muted" id="nextEventDate"></p>
+    <p id="nextEventCountdown" class="fact"></p>
+   </article>
+  </section>
+
+  <section class="section card">
+   <div class="tag">🧠 CURIOSIDAD DEL DÍA</div>
+   <h2 id="factDate" style="margin-top:12px"></h2>
+   <p class="fact" id="dailyFact"></p>
+  </section>
+
+  <section class="section card">
+   <h2>🗓️ Eventos de DAYS 2027</h2>
+   <p class="muted">Fechas importantes de 2026 y 2027.</p>
+   <div id="eventList"></div>
+  </section>
+
+  <section class="section card">
+   <h2>✨ Mis eventos personales</h2>
+   <p class="muted">Agrega cumpleaños, aniversarios, viajes o cualquier fecha importante.</p>
+   <div class="field">
+    <label>Nombre del evento</label>
+    <input id="personalName" placeholder="Ej. Mi graduación">
+   </div>
+   <div class="field">
+    <label>Fecha</label>
+    <input id="personalDate" type="date">
+   </div>
+   <button id="addPersonalEvent">Agregar evento +</button>
+   <div id="personalList"></div>
+  </section>
+
+  <footer>
+   DAYS 2027 · Un año, miles de momentos.<br>
+   Hora local según la ubicación seleccionada.
+  </footer>
+ </div>
+</main>
+
+<script>
+/* =========================================
+   UBICACIONES Y ZONAS HORARIAS
+========================================= */
+
+const countries = [
+ ["Argentina","Argentina","America/Argentina/Buenos_Aires"],
+ ["Bolivia","Bolivia","America/La_Paz"],
+ ["Brasil","Brazil","America/Sao_Paulo"],
+ ["Chile","Chile","America/Santiago"],
+ ["Colombia","Colombia","America/Bogota"],
+ ["Costa Rica","Costa Rica","America/Costa_Rica"],
+ ["Cuba","Cuba","America/Havana"],
+ ["Ecuador","Ecuador","America/Guayaquil"],
+ ["El Salvador","El Salvador","America/El_Salvador"],
+ ["Guatemala","Guatemala","America/Guatemala"],
+ ["Honduras","Honduras","America/Tegucigalpa"],
+ ["México","Mexico","America/Mexico_City"],
+ ["Nicaragua","Nicaragua","America/Managua"],
+ ["Panamá","Panama","America/Panama"],
+ ["Paraguay","Paraguay","America/Asuncion"],
+ ["Perú","Peru","America/Lima"],
+ ["Puerto Rico","Puerto Rico","America/Puerto_Rico"],
+ ["República Dominicana","Dominican Republic","America/Santo_Domingo"],
+ ["Uruguay","Uruguay","America/Montevideo"],
+ ["Venezuela","Venezuela","America/Caracas"],
+ ["Alemania","Germany","Europe/Berlin"],
+ ["Australia","Australia","Australia/Sydney"],
+ ["Canadá","Canada","America/Toronto"],
+ ["China","China","Asia/Shanghai"],
+ ["Corea del Sur","South Korea","Asia/Seoul"],
+ ["Egipto","Egypt","Africa/Cairo"],
+ ["España","Spain","Europe/Madrid"],
+ ["Estados Unidos","United States","America/New_York"],
+ ["Francia","France","Europe/Paris"],
+ ["India","India","Asia/Kolkata"],
+ ["Italia","Italy","Europe/Rome"],
+ ["Japón","Japan","Asia/Tokyo"],
+ ["Marruecos","Morocco","Africa/Casablanca"],
+ ["Nueva Zelanda","New Zealand","Pacific/Auckland"],
+ ["Países Bajos","Netherlands","Europe/Amsterdam"],
+ ["Portugal","Portugal","Europe/Lisbon"],
+ ["Reino Unido","United Kingdom","Europe/London"],
+ ["Sudáfrica","South Africa","Africa/Johannesburg"],
+ ["Turquía","Turkey","Europe/Istanbul"]
+];
+
+const regions = {
+ "México":["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Ciudad de México","Coahuila","Colima","Durango","Estado de México","Guanajuato","Guerrero","Hidalgo","Jalisco","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas"],
+ "Brasil":["Acre","Alagoas","Amapá","Amazonas","Bahía","Ceará","Distrito Federal","Espírito Santo","Goiás","Maranhão","Mato Grosso","Mato Grosso do Sul","Minas Gerais","Pará","Paraíba","Paraná","Pernambuco","Piauí","Rio de Janeiro","Rio Grande do Norte","Rio Grande do Sul","Rondônia","Roraima","Santa Catarina","São Paulo","Sergipe","Tocantins"],
+ "Chile":["Arica y Parinacota","Tarapacá","Antofagasta","Atacama","Coquimbo","Valparaíso","Metropolitana de Santiago","O'Higgins","Maule","Ñuble","Biobío","La Araucanía","Los Ríos","Los Lagos","Aysén","Magallanes"],
+ "Argentina":["Buenos Aires","Catamarca","Chaco","Chubut","Córdoba","Corrientes","Entre Ríos","Formosa","Jujuy","La Pampa","La Rioja","Mendoza","Misiones","Neuquén","Río Negro","Salta","San Juan","San Luis","Santa Cruz","Santa Fe","Santiago del Estero","Tierra del Fuego","Tucumán"],
+ "Colombia":["Amazonas","Antioquia","Arauca","Atlántico","Bogotá D.C.","Bolívar","Boyacá","Caldas","Caquetá","Casanare","Cauca","Cesar","Chocó","Córdoba","Cundinamarca","Guainía","Guaviare","Huila","La Guajira","Magdalena","Meta","Nariño","Norte de Santander","Putumayo","Quindío","Risaralda","San Andrés","Santander","Sucre","Tolima","Valle del Cauca","Vaupés","Vichada"],
+ "Perú":["Amazonas","Áncash","Apurímac","Arequipa","Ayacucho","Cajamarca","Callao","Cusco","Huancavelica","Huánuco","Ica","Junín","La Libertad","Lambayeque","Lima","Loreto","Madre de Dios","Moquegua","Pasco","Piura","Puno","San Martín","Tacna","Tumbes","Ucayali"],
+ "Venezuela":["Amazonas","Anzoátegui","Apure","Aragua","Barinas","Bolívar","Carabobo","Caracas","Cojedes","Delta Amacuro","Falcón","Guárico","Lara","Mérida","Miranda","Monagas","Nueva Esparta","Portuguesa","Sucre","Táchira","Trujillo","Vargas","Yaracuy","Zulia"],
+ "Ecuador":["Azuay","Bolívar","Cañar","Carchi","Chimborazo","Cotopaxi","El Oro","Esmeraldas","Galápagos","Guayas","Imbabura","Loja","Los Ríos","Manabí","Morona Santiago","Napo","Orellana","Pastaza","Pichincha","Santa Elena","Santo Domingo","Sucumbíos","Tungurahua","Zamora Chinchipe"],
+ "Bolivia":["Beni","Chuquisaca","Cochabamba","La Paz","Oruro","Pando","Potosí","Santa Cruz","Tarija"],
+ "Paraguay":["Alto Paraguay","Alto Paraná","Amambay","Asunción","Boquerón","Caaguazú","Caazapá","Canindeyú","Central","Concepción","Cordillera","Guairá","Itapúa","Misiones","Ñeembucú","Paraguarí","Presidente Hayes","San Pedro"],
+ "Uruguay":["Artigas","Canelones","Cerro Largo","Colonia","Durazno","Flores","Florida","Lavalleja","Maldonado","Montevideo","Paysandú","Río Negro","Rivera","Rocha","Salto","San José","Soriano","Tacuarembó","Treinta y Tres"],
+ "Costa Rica":["Alajuela","Cartago","Guanacaste","Heredia","Limón","Puntarenas","San José"],
+ "Guatemala":["Alta Verapaz","Baja Verapaz","Chimaltenango","Chiquimula","Guatemala","Huehuetenango","Izabal","Jalapa","Jutiapa","Petén","Quetzaltenango","Quiché","Retalhuleu","Sacatepéquez","San Marcos","Santa Rosa","Sololá","Suchitepéquez","Totonicapán","Zacapa"],
+ "Panamá":["Bocas del Toro","Chiriquí","Coclé","Colón","Darién","Herrera","Los Santos","Panamá","Panamá Oeste","Veraguas"],
+ "Cuba":["Artemisa","Camagüey","Ciego de Ávila","Cienfuegos","Granma","Guantánamo","Holguín","La Habana","Las Tunas","Matanzas","Mayabeque","Pinar del Río","Sancti Spíritus","Santiago de Cuba","Villa Clara"],
+ "España":["Andalucía","Aragón","Asturias","Canarias","Cantabria","Castilla-La Mancha","Castilla y León","Cataluña","Comunidad Valenciana","Extremadura","Galicia","Islas Baleares","La Rioja","Madrid","Murcia","Navarra","País Vasco"],
+ "Estados Unidos":["Alabama","Alaska","Arizona","California","Colorado","Florida","Georgia","Hawái","Illinois","Nueva York","Texas","Washington"]
+};
+
+const $ = id => document.getElementById(id);
+let selectedCountry = null;
+let savedLocation = JSON.parse(localStorage.getItem("daysLocation") || "null");
+
+function setMessage(msg){$("locationMessage").textContent=msg;}
+
+function fillCountries(){
+ const list=$("countryOptions");
+ countries.forEach(c=>{
+  const option=document.createElement("option");
+  option.value=c[0];list.appendChild(option);
+ });
+ const tzList=$("timezoneOptions");
+ let zones=[];
+ try{zones=Intl.supportedValuesOf("timeZone")}catch(e){}
+ if(!zones.length) zones=countries.map(c=>c[2]);
+ zones.forEach(z=>{
+  const o=document.createElement("option");o.value=z;tzList.appendChild(o);
+ });
+}
+
+function findCountry(name){
+ return countries.find(c=>c[0].toLowerCase()===name.trim().toLowerCase());
+}
+
+function updateRegions(countryName,chosen=""){
+ const select=$("regionSelect");
+ select.innerHTML="";
+ const list=regions[countryName]||[];
+ const first=document.createElement("option");
+ first.value="";first.textContent=list.length?"Selecciona una región":"No hay regiones precargadas; escribe tu ciudad";
+ select.appendChild(first);
+ list.forEach(r=>{
+  const o=document.createElement("option");o.value=r;o.textContent=r;
+  if(r===chosen)o.selected=true;
+  select.appendChild(o);
+ });
+}
+
+$("countrySearch").addEventListener("input",()=>{
+ const c=findCountry($("countrySearch").value);
+ if(!c)return;
+ selectedCountry=c;
+ updateRegions(c[0]);
+ $("timezoneInput").value=c[2];
+ setMessage("País seleccionado: "+c[0]);
+});
+
+$("countrySearch").addEventListener("change",()=>{
+ const c=findCountry($("countrySearch").value);
+ if(c){selectedCountry=c;updateRegions(c[0]);$("timezoneInput").value=c[2];}
+});
+
+$("gpsButton").addEventListener("click",()=>{
+ if(!navigator.geolocation){
+  setMessage("Tu navegador no permite detectar la ubicación. Puedes seleccionarla manualmente.");
+  return;
+ }
+ setMessage("Solicitando permiso de ubicación...");
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  const {latitude,longitude}=pos.coords;
+  setMessage("Ubicación detectada. Buscando país y región...");
+  try{
+   const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=10`;
+   const response=await fetch(url);
+   if(!response.ok)throw new Error("No se pudo consultar el lugar");
+   const data=await response.json();
+   const a=data.address||{};
+   const countryName=a.country||"";
+   const country=findCountry(countryName);
+   if(country){
+    selectedCountry=country;
+    $("countrySearch").value=country[0];
+    updateRegions(country[0]);
+    const region=a.state||a.region||a.province||"";
+    const match=[...(regions[country[0]]||[])].find(x=>x.toLowerCase()===region.toLowerCase());
+    if(match)$("regionSelect").value=match;
+    $("cityInput").value=a.city||a.town||a.village||a.municipality||a.county||"";
+    $("timezoneInput").value=Intl.DateTimeFormat().resolvedOptions().timeZone||country[2];
+    setMessage("Lugar sugerido: "+[a.city||a.town||a.village,region,country[0]].filter(Boolean).join(", ")+". Revisa tu zona horaria antes de entrar.");
+   }else{
+    setMessage("Detectamos "+countryName+", pero selecciona el país manualmente en el buscador.");
+   }
+  }catch(e){
+   setMessage("No pudimos traducir las coordenadas a un lugar. Puedes completar el selector manualmente.");
+  }
+ },err=>{
+  if(err.code===1)setMessage("No concediste permiso de ubicación. No pasa nada: puedes elegir el lugar manualmente.");
+  else setMessage("No se pudo detectar tu ubicación. Inténtalo otra vez o selecciónala manualmente.");
+ },{enableHighAccuracy:false,timeout:12000,maximumAge:60000});
+});
+
+function saveLocation(){
+ const c=findCountry($("countrySearch").value);
+ const city=$("cityInput").value.trim();
+ const region=$("regionSelect").value;
+ const timezone=$("timezoneInput").value.trim();
+ if(!c){setMessage("Selecciona un país válido.");return;}
+ if(!city){setMessage("Escribe tu ciudad o lugar específico.");return;}
+ try{new Intl.DateTimeFormat("es",{timeZone:timezone});}
+ catch(e){setMessage("La zona horaria no parece válida. Selecciona una de la lista.");return;}
+ const location={
+  country:c[0],region,city,timezone
+ };
+ localStorage.setItem("daysLocation",JSON.stringify(location));
+ savedLocation=location;
+ startSite();
+}
+$("saveLocationButton").addEventListener("click",saveLocation);
+
+function showLocationScreen(){
+ $("app").classList.add("hidden");
+ $("launchScreen").classList.add("hidden");
+ $("locationScreen").classList.remove("hidden");
+}
+$("changeLocation").addEventListener("click",showLocationScreen);
+$("changeLocationLaunch").addEventListener("click",showLocationScreen);
+
+/* =========================================
+   RELOJ SEGÚN LA ZONA HORARIA ELEGIDA
+========================================= */
+
+function dateParts(date,tz){
+ const p=new Intl.DateTimeFormat("en-CA",{
+  timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",
+  hour:"2-digit",minute:"2-digit",second:"2-digit",
+  hourCycle:"h23"
+ }).formatToParts(date);
+ const out={};
+ p.forEach(x=>{if(x.type!=="literal")out[x.type]=Number(x.value)});
+ return out;
+}
+
+// Convierte una fecha/hora de pared en una fecha UTC para una zona IANA.
+function zonedDate(y,m,d,h,mi,s,tz){
+ let guess=Date.UTC(y,m-1,d,h,mi,s);
+ for(let i=0;i<3;i++){
+  const p=dateParts(new Date(guess),tz);
+  const asUTC=Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second);
+  const wanted=Date.UTC(y,m-1,d,h,mi,s);
+  guess+=wanted-asUTC;
+ }
+ return new Date(guess);
+}
+function pad(n){return String(n).padStart(2,"0")}
+function diffParts(target,now){
+ let ms=Math.max(0,target.getTime()-now.getTime());
+ let total=Math.floor(ms/1000);
+ const hours=Math.floor(total/3600);
+ const minutes=Math.floor(total%3600/60);
+ const seconds=total%60;
+ return {hours,minutes,seconds};
+}
+function showDiff(prefix,diff){
+ $(prefix+"Hours").textContent=pad(diff.hours);
+ $(prefix+"Minutes").textContent=pad(diff.minutes);
+ $(prefix+"Seconds").textContent=pad(diff.seconds);
+}
+function formatDate(date,tz){
+ return new Intl.DateTimeFormat("es-MX",{
+  timeZone:tz,day:"numeric",month:"long",year:"numeric"
+ }).format(date);
+}
+function currentYearStart(p,tz){
+ return zonedDate(p.year,1,1,0,0,0,tz);
+}
+
+/* =========================================
+   EVENTOS DEL SITIO
+========================================= */
+
+const events=[
+ {name:"Navidad 2026",date:[2026,12,25],emoji:"🎄"},
+ {name:"Año Nuevo 2027",date:[2027,1,1],emoji:"🎆"},
+ {name:"Día de Reyes",date:[2027,1,6],emoji:"👑"},
+ {name:"Día del Amor y la Amistad",date:[2027,2,14],emoji:"💌"},
+ {name:"Cumpleaños de el creador",date:[2027,3,14],emoji:"🎂"},
+ {name:"Inicio de primavera",date:[2027,3,20],emoji:"🌸"},
+ {name:"Día del Niño (México)",date:[2027,4,30],emoji:"🧸"},
+ {name:"Día de las Madres (México)",date:[2027,5,10],emoji:"🌷"},
+ {name:"Inicio del verano",date:[2027,6,21],emoji:"☀️"},
+ {name:"Día de la Independencia de México",date:[2027,9,16],emoji:"🇲🇽"},
+ {name:"Inicio del otoño",date:[2027,9,23],emoji:"🍂"},
+ {name:"Halloween",date:[2027,10,31],emoji:"🎃"},
+ {name:"Día de Muertos",date:[2027,11,1],emoji:"💀"},
+ {name:"Día de Muertos",date:[2027,11,2],emoji:"🕯️"},
+ {name:"Navidad 2027",date:[2027,12,25],emoji:"🎄"},
+ {name:"Último día de 2027",date:[2027,12,31],emoji:"✨"}
+];
+
+function eventDate(e,tz){
+ return zonedDate(e.date[0],e.date[1],e.date[2],0,0,0,tz);
+}
+function renderEvents(now){
+ const tz=savedLocation.timezone;
+ const p=dateParts(now,tz);
+ const list=$("eventList");list.innerHTML="";
+ events.forEach(e=>{
+  const d=eventDate(e,tz);
+  if(d.getTime()<now.getTime()-86400000)return;
+  const row=document.createElement("div");row.className="event";
+  const left=document.createElement("div");
+  const name=document.createElement("b");
+  name.textContent=e.emoji+" "+e.name;
+  const date=document.createElement("small");
+  date.textContent=formatDate(d,tz);
+  left.append(name,date);
+  const right=document.createElement("span");right.className="tag";
+  right.textContent=d.getTime()<now.getTime()+86400000?"¡Hoy!":"Próximamente";
+  row.append(left,right);list.appendChild(row);
+ });
+}
+
+function nextEvent(now){
+ const tz=savedLocation.timezone;
+ const future=events.map(e=>({event:e,date:eventDate(e,tz)}))
+  .filter(x=>x.date.getTime()>=now.getTime()-1000)
+  .sort((a,b)=>a.date-b.date);
+ if(!future.length)return null;
+ return future[0];
+}
+
+/* =========================================
+   TEMÁTICAS AUTOMÁTICAS
+========================================= */
+
+function applyTheme(p){
+ let theme={
+  bg:"#10101b",panel:"#1b1b2b",panel2:"#24243a",
+  text:"#f6f4ff",muted:"#aaa8c2",accent:"#a78bfa",
+  label:"DAYS 2027 · WORLD EDITION"
+ };
+ const md=p.month*100+p.day;
+ if((p.year===2026&&md>=1124)||(p.year===2027&&md>=1201)){
+  theme={bg:"#10131d",panel:"#202a3c",panel2:"#293a50",text:"#f7f6ff",muted:"#b7c6d8",accent:"#67d5c4",label:"🎄 TEMPORADA NAVIDEÑA"};
+ }
+ if(p.year===2027&&md>=101&&md<=105){
+  theme={bg:"#11182a",panel:"#202d48",panel2:"#2d3d5e",text:"#fff",muted:"#b9c6df",accent:"#70c6ff",label:"🎆 AÑO NUEVO"};
+ }
+ if(p.year===2027&&md>=106&&md<=213){
+  theme={bg:"#151426",panel:"#25223c",panel2:"#342d50",text:"#fff",muted:"#c5bddb",accent:"#b59aff",label:"❄️ INVIERNO"};
+ }
+ if(p.year===2027&&md===214){
+  theme={bg:"#25131e",panel:"#3a1e32",panel2:"#512b43",text:"#fff",muted:"#e1bbd1",accent:"#ff83b7",label:"💗 AMOR Y AMISTAD"};
+ }
+ if(p.year===2027&&md===314){
+  theme={bg:"#24152a",panel:"#3b2348",panel2:"#533264",text:"#fff",muted:"#d7b9e5",accent:"#f39bff",label:"🎂 CUMPLEAÑOS DEL CREADOR"};
+ }
+ if(p.year===2027&&md>=315&&md<=620){
+  theme={bg:"#14251f",panel:"#203c30",panel2:"#2c4d3b",text:"#f7fff9",muted:"#b8d8c3",accent:"#83dfa3",label:"🌸 PRIMAVERA"};
+ }
+ if(p.year===2027&&md>=621&&md<=922){
+  theme={bg:"#172438",panel:"#243c5a",panel2:"#315274",text:"#fff",muted:"#bdd2e7",accent:"#70d5f4",label:"☀️ VERANO"};
+ }
+ if(p.year===2027&&md===916){
+  theme={bg:"#281a17",panel:"#432b20",panel2:"#60402a",text:"#fff",muted:"#e1c5a8",accent:"#f4a64f",label:"🇲🇽 INDEPENDENCIA DE MÉXICO"};
+ }
+ if(p.year===2027&&md>=923&&md<=1030){
+  theme={bg:"#251c18",panel:"#3c2b22",panel2:"#573b2c",text:"#fff",muted:"#d9c0aa",accent:"#e99a55",label:"🍂 OTOÑO"};
+ }
+ if(p.year===2027&&md===1031){
+  theme={bg:"#1d1021",panel:"#351b3d",panel2:"#512450",text:"#fff",muted:"#d8b9d9",accent:"#ff8a45",label:"🎃 HALLOWEEN"};
+ }
+ if(p.year===2027&&(md===1101||md===1102)){
+  theme={bg:"#21151d",panel:"#38232f",panel2:"#503044",text:"#fff",muted:"#d6b6c4",accent:"#e99a68",label:"🕯️ DÍA DE MUERTOS"};
+ }
+ Object.entries(theme).forEach(([k,v])=>{
+  const prop={"bg":"--bg","panel":"--panel","panel2":"--panel2","text":"--text","muted":"--muted","accent":"--accent"}[k];
+  if(prop)document.documentElement.style.setProperty(prop,v);
+ });
+ $("themeLabel").textContent=theme.label;
+ document.querySelector('meta[name="theme-color"]').content=theme.bg;
+}
+
+/* =========================================
+   CURIOSIDADES DIARIAS
+========================================= */
+
+const facts=[
+ "Los pulpos tienen tres corazones.",
+ "La miel puede conservarse durante muchísimo tiempo si se almacena correctamente.",
+ "Los tiburones existen desde antes que los árboles.",
+ "Un día en Venus dura más que su año.",
+ "Los flamencos obtienen su color de los pigmentos de su alimentación.",
+ "La Luna se aleja lentamente de la Tierra.",
+ "Los plátanos son bayas desde el punto de vista botánico.",
+ "Los wombats producen excrementos con forma cúbica.",
+ "El corazón de una ballena azul puede ser enorme.",
+ "Los cuervos pueden recordar rostros humanos.",
+ "La Antártida es el continente más seco.",
+ "Saturno tiene una densidad media menor que la del agua.",
+ "Las abejas pueden reconocer patrones y formas.",
+ "Los koalas tienen huellas dactilares parecidas a las humanas.",
+ "El sonido no puede viajar por el vacío del espacio.",
+ "Los árboles pueden comunicarse mediante redes subterráneas de hongos.",
+ "Los delfines tienen silbidos característicos.",
+ "La Gran Muralla China no es visible a simple vista desde la Luna.",
+ "Los gatos tienen un órgano especial que les ayuda a percibir olores.",
+ "El agua puede existir en tres estados al mismo tiempo bajo ciertas condiciones.",
+ "Los rayos pueden alcanzar temperaturas mayores que la superficie del Sol.",
+ "La jirafa tiene el mismo número de vértebras cervicales que los humanos.",
+ "Los pingüinos emperador pueden bucear a grandes profundidades.",
+ "La Tierra no es una esfera perfecta: está ligeramente achatada en los polos.",
+ "Los colibríes pueden volar hacia atrás.",
+ "El cerebro humano contiene miles de millones de neuronas.",
+ "Las estrellas que vemos pueden estar a cientos o miles de años luz.",
+ "Los elefantes pueden reconocerse en un espejo.",
+ "Las mariposas prueban sabores con sus patas.",
+ "Los arrecifes de coral albergan una enorme diversidad de vida.",
+ "La palabra alfabeto viene de alfa y beta.",
+ "El bambú puede crecer muy rápido en condiciones adecuadas.",
+ "Las nutrias marinas suelen usar herramientas para abrir alimentos.",
+ "Marte tiene el volcán más grande conocido del sistema solar.",
+ "Los árboles más antiguos pueden vivir durante miles de años.",
+ "El ajolote puede regenerar algunas partes de su cuerpo.",
+ "Los camaleones cambian de color por varias razones, no solo para esconderse.",
+ "La luz del Sol tarda unos ocho minutos en llegar a la Tierra.",
+ "Las hormigas pueden formar puentes con sus propios cuerpos.",
+ "Los pingüinos tienen plumas, aunque parezcan tener pelaje.",
+ "Los copos de nieve pueden tener estructuras muy variadas.",
+ "El océano cubre la mayor parte de la superficie terrestre.",
+ "Las jirafas duermen durante periodos relativamente cortos.",
+ "Los murciélagos son los únicos mamíferos capaces de volar de forma sostenida.",
+ "Los volcanes también pueden formarse bajo el océano.",
+ "El corazón humano late alrededor de cien mil veces al día, aproximadamente.",
+ "La madera flota porque muchos tipos de madera son menos densos que el agua.",
+ "Los caracoles tienen miles de diminutos dientes.",
+ "Los planetas gigantes no tienen una superficie sólida como la Tierra.",
+ "Las nubes están formadas por pequeñas gotas de agua o cristales de hielo."
+];
+
+function renderFact(p){
+ const day=zonedDate(p.year,p.month,p.day,12,0,0,savedLocation.timezone);
+ const dayNumber=Math.floor((day-Date.UTC(p.year,0,1))/86400000);
+ $("factDate").textContent="Curiosidad del día · "+formatDate(new Date(),savedLocation.timezone);
+ $("dailyFact").textContent=facts[((dayNumber%facts.length)+facts.length)%facts.length];
+}
+
+/* =========================================
+   EVENTOS PERSONALES
+========================================= */
+
+function getPersonal(){
+ return JSON.parse(localStorage.getItem("daysPersonalEvents")||"[]");
+}
+function renderPersonal(){
+ const list=$("personalList");list.innerHTML="";
+ getPersonal().forEach((e,index)=>{
+  const row=document.createElement("div");row.className="personal-item";
+  const label=document.createElement("span");
+  label.textContent="✨ "+e.name+" · "+e.date;
+  const del=document.createElement("button");del.className="danger";
+  del.textContent="Eliminar";
+  del.style.padding="7px 10px";
+  del.addEventListener("click",()=>{
+   const all=getPersonal();all.splice(index,1);
+   localStorage.setItem("daysPersonalEvents",JSON.stringify(all));renderPersonal();
+  });
+  row.append(label,del);list.appendChild(row);
+ });
+}
+$("addPersonalEvent").addEventListener("click",()=>{
+ const name=$("personalName").value.trim();
+ const date=$("personalDate").value;
+ if(!name||!date){alert("Escribe el nombre y la fecha del evento.");return;}
+ const all=getPersonal();all.push({name,date});
+ localStorage.setItem("daysPersonalEvents",JSON.stringify(all));
+ $("personalName").value="";$("personalDate").value="";
+ renderPersonal();
+});
+
+/* =========================================
+   CUENTA REGRESIVA Y LANZAMIENTO
+========================================= */
+
+const launchParts=[2026,11,24];
+const newYearParts=[2027,1,1];
+const finishParts=[2028,1,1];
+
+function startSite(){
+ $("locationScreen").classList.add("hidden");
+ $("launchScreen").classList.add("hidden");
+ $("app").classList.add("hidden");
+ $("savedPlace").textContent="📍 "+savedLocation.city+", "+savedLocation.country;
+ refresh();
+ renderPersonal();
+ setInterval(refresh,1000);
+}
+
+function refresh(){
+ if(!savedLocation)return;
+ const now=new Date();
+ const tz=savedLocation.timezone;
+ const p=dateParts(now,tz);
+ const launch=zonedDate(2026,11,24,0,0,0,tz);
+ const newYear=zonedDate(2027,1,1,0,0,0,tz);
+ const finish=zonedDate(2028,1,1,0,0,0,tz);
+
+ if(now<launch){
+  $("app").classList.add("hidden");
+  $("launchScreen").classList.remove("hidden");
+  showDiff("launch",diffParts(launch,now));
+  $("launchDateText").textContent="24 de noviembre de 2026 · 00:00";
+  $("launchPlace").textContent=savedLocation.city+", "+savedLocation.country+" · "+tz;
+  return;
+ }
+
+ $("launchScreen").classList.add("hidden");
+ $("app").classList.remove("hidden");
+ applyTheme(p);
+
+ let target,title,subtitle;
+ if(now<newYear){
+  target=newYear;title="2027";subtitle="¡El año nuevo está por comenzar!";
+ }else if(now<finish){
+  target=finish;title="FIN DE 2027";subtitle="Cada segundo cuenta. Disfruta este año.";
+ }else{
+  target=finish;title="GRACIAS";subtitle="DAYS 2027 ha llegado a su final.";
+ }
+ $("mainTitle").textContent=title;
+ $("mainSubtitle").textContent=subtitle;
+ $("targetText").textContent="Objetivo: "+formatDate(target,tz)+" · "+tz;
+ showDiff("",diffParts(target,now));
+
+ // Cuenta regresiva del cumpleaños del creador.
+ let birthdayYear=p.year;
+ let birthday=zonedDate(birthdayYear,3,14,0,0,0,tz);
+ if(now>=zonedDate(birthdayYear,3,14,0,0,0,tz)){
+  birthday=zonedDate(birthdayYear+1,3,14,0,0,0,tz);
+ }
+ const birthdayDiff=diffParts(birthday,now);
+ showDiff("b",birthdayDiff);
+ $("birthdayMessage").textContent=
+  (p.month===3&&p.day===14)?"¡HOY ES EL CUMPLEAÑOS DEL CREADOR! 🎉":
+  "Próxima fecha: "+formatDate(birthday,tz);
+
+ const next=nextEvent(now);
+ if(next){
+  $("nextEventName").textContent=next.event.emoji+" "+next.event.name;
+  $("nextEventDate").textContent=formatDate(next.date,tz);
+  const d=diffParts(next.date,now);
+  $("nextEventCountdown").textContent=
+   d.hours+" horas, "+d.minutes+" minutos y "+d.seconds+" segundos";
+ }else{
+  $("nextEventName").textContent="¡Fin de DAYS 2027!";
+  $("nextEventDate").textContent="31 de diciembre de 2027";
+  $("nextEventCountdown").textContent="Gracias por acompañarnos.";
+ }
+ renderEvents(now);
+ renderFact(p);
+}
+
+fillCountries();
+
+if(savedLocation&&savedLocation.country&&savedLocation.city&&savedLocation.timezone){
+ startSite();
+}else{
+ showLocationScreen();
+}
+</script>
+</body>
+</html>
